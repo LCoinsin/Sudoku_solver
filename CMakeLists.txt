@@ -5,6 +5,20 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(Sudoku main.cpp)
 
+add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_SOURCE_DIR}/config.toml
+        ${CMAKE_CURRENT_BINARY_DIR}/config.toml
+)
+
+add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_SOURCE_DIR}/grid_in.xml
+        ${CMAKE_CURRENT_BINARY_DIR}/grid_in.xml
+)
+
 find_path(RAPIDXML_INCLUDE_DIRS "rapidxml/rapidxml.hpp")
 target_include_directories(Sudoku PRIVATE ${RAPIDXML_INCLUDE_DIRS})
 
