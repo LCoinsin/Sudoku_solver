@@ -41,6 +41,16 @@ void print_vector_2d(const vector<vector<unsigned int>>& grid) {
     }
 }
 
+void print_map_possibility(const map<int, vector<int>>& map_order) {
+    cout << "test" << endl;
+//    for(auto it = map_order.cbegin(); it != map_order.cend(); ++it)
+//    {
+//        cout << "test" << endl;
+//        cout << it->first << endl;
+////        << " " << it->second.first << " " << it->second.second << endl;
+//    }
+}
+
 void check_possibility_row(const vector<vector<unsigned int>>& grid, vector<unsigned int>& list_possibility, int row) {
     for (int i = 0; i < 9; i++) {
         if (grid[row][i] != 0) {
@@ -81,8 +91,8 @@ void check_possibility_subgrid(const vector<vector<unsigned int>>& grid, vector<
     }
 }
 
-vector<vector<unsigned int>> set_grid_possibility(const vector<vector<unsigned int>>& grid) {
-    vector<vector<unsigned int>> grid_possibility;
+vector<vector<int>> set_grid_possibility(const vector<vector<unsigned int>>& grid) {
+    vector<vector<int>> grid_possibility;
 
     for (int row = 0; row < grid.size(); row++) {
         grid_possibility.emplace_back();
@@ -93,7 +103,7 @@ vector<vector<unsigned int>> set_grid_possibility(const vector<vector<unsigned i
                 check_possibility_row(grid, list_possibility, row);
                 check_possibility_col(grid, list_possibility, col);
                 check_possibility_subgrid(grid, list_possibility, row, col);
-                grid_possibility[i].push_back(list_possibility.size());
+                grid_possibility[row].push_back(static_cast<int>(list_possibility.size()));
                 i++;
             }
         }
@@ -104,19 +114,21 @@ vector<vector<unsigned int>> set_grid_possibility(const vector<vector<unsigned i
 }
 
 map<int, vector<int>> set_order_fill(const vector<vector<unsigned int>>& grid_possibility) {
+    cout << "test " << endl;
     map<int, vector<int>> map_order;
     int order = 0;
-    for (int i = 0; i<9; i++) {
-        for (int row = 0; row < grid_possibility.size(); row++) {
-            for (int col = 0; col < grid_possibility[row].size(); col++) {
-                if (grid_possibility[row][col] == i) {
-                    vector<int> localisation = {row, col};
-                    map_order[order] = localisation;
-                    order++;
-                }
-            }
-        }
-    }
+//    for (int i = 0; i<9; i++) {
+//        for (int row = 0; row < grid_possibility.size(); row++) {
+//            for (int col = 0; col < grid_possibility[row].size(); col++) {
+//                if (grid_possibility[row][col] == i) {
+//                    vector<int> localisation = {row, col};
+//                    cout << "row : " << row << " - col : " << col << endl;
+//                    map_order[order] = localisation;
+//                    order++;
+//                }
+//            }
+//        }
+//    }
     return map_order;
 }
 
@@ -132,11 +144,12 @@ int main() {
     print_vector_2d(grid);
 
     //Calcul des possibilités par case disponible
-    vector<vector<unsigned int>> grid_possibility = set_grid_possibility(grid);
+    vector<vector<int>> grid_possibility = set_grid_possibility(grid);
 
     //Determine l'ordre de passage des valeurs pour l'algorithme de backtracking
-    map<int, vector<int>> map_order = set_order_fill(grid_possibility);
+//    map<int, vector<int>> map_order = set_order_fill(grid_possibility);
 
+//    print_map_possibility(map_order);
 
     return 0;
 }
