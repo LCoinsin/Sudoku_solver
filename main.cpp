@@ -3,6 +3,7 @@
 #include "vector"
 #include <toml.hpp>
 #include <list>
+#include <map>
 
 using namespace std;
 using namespace rapidxml;
@@ -40,7 +41,7 @@ void print_vector_2d(const vector<vector<unsigned int>>& grid) {
     }
 }
 
-void check_possibility_row(const vector<vector<unsigned int>>& grid, vector<int>& list_possibility, int row) {
+void check_possibility_row(const vector<vector<unsigned int>>& grid, vector<unsigned int>& list_possibility, int row) {
     for (int i = 0; i < 9; i++) {
         if (grid[row][i] != 0) {
             for (int j = 0; j<list_possibility.size(); j++) {
@@ -52,7 +53,7 @@ void check_possibility_row(const vector<vector<unsigned int>>& grid, vector<int>
     }
 }
 
-void check_possibility_col(const vector<vector<unsigned int>>& grid, vector<int>& list_possibility, int col) {
+void check_possibility_col(const vector<vector<unsigned int>>& grid, vector<unsigned int>& list_possibility, int col) {
     for (int i = 0; i<9; i++) {
         if(grid[i][col] != 0) {
             for (int j = 0; j<list_possibility.size(); j++) {
@@ -64,7 +65,7 @@ void check_possibility_col(const vector<vector<unsigned int>>& grid, vector<int>
     }
 }
 
-void check_possibility_subgrid(const vector<vector<unsigned int>>& grid, vector<int>& list_possibility, int row, int col) {
+void check_possibility_subgrid(const vector<vector<unsigned int>>& grid, vector<unsigned int>& list_possibility, int row, int col) {
     double subgrid_row = floor(row/3);
     double subgrid_col = floor(col/3);
     for (int i = 0; i < 3; i++) {
@@ -80,19 +81,43 @@ void check_possibility_subgrid(const vector<vector<unsigned int>>& grid, vector<
     }
 }
 
-void set_grid_possibility(const vector<vector<unsigned int>>& grid) {
+vector<vector<unsigned int>> set_grid_possibility(const vector<vector<unsigned int>>& grid) {
+    vector<vector<unsigned int>> grid_possibility;
+
     for (int row = 0; row < grid.size(); row++) {
+        grid_possibility.emplace_back();
+        int i = 0;
         for (int col = 0; col < grid[row].size(); col++) {
             if (grid[row][col] == 0) {
-                vector<int> list_possibility = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+                vector<unsigned int> list_possibility = {1, 2, 3, 4, 5, 6, 7, 8, 9};
                 check_possibility_row(grid, list_possibility, row);
                 check_possibility_col(grid, list_possibility, col);
                 check_possibility_subgrid(grid, list_possibility, row, col);
-                cout << "Size : " << list_possibility.size() << " | ";
+                grid_possibility[i].push_back(list_possibility.size());
+                i++;
             }
         }
         cout << endl;
     }
+
+    return grid_possibility;
+}
+
+map<int, vector<int>> set_order_fill(const vector<vector<unsigned int>>& grid_possibility) {
+    map<int, vector<int>> map_order;
+    int order = 0;
+    for (int i = 0; i<9; i++) {
+        for (int row = 0; row < grid_possibility.size(); row++) {
+            for (int col = 0; col < grid_possibility[row].size(); col++) {
+                if (grid_possibility[row][col] == i) {
+                    vector<int> localisation = {row, col};
+                    map_order[order] = localisation;
+                    order++;
+                }
+            }
+        }
+    }
+    return map_order;
 }
 
 int main() {
@@ -106,8 +131,12 @@ int main() {
 
     print_vector_2d(grid);
 
-    //Calcul des possibilitées par case disponible
-    set_grid_possibility(grid);
+    //Calcul des possibilités par case disponible
+    vector<vector<unsigned int>> grid_possibility = set_grid_possibility(grid);
+
+    //Determine l'ordre de passage des valeurs pour l'algorithme de backtracking
+    map<int, vector<int>> map_order = set_order_fill(grid_possibility);
+
 
     return 0;
 }
